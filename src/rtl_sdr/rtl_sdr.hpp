@@ -31,22 +31,22 @@ public:
             return false;
         }
 
-        if (rtlsdr_set_sample_rate(dev, configuration.sample_rate) != 0)
+        if (rtlsdr_set_sample_rate(dev, configuration.rtl_sdr.sample_rate) != 0)
         {
             std::cerr << "Failed to set sample rate." << std::endl;
             return false;
         }
 
-        if (rtlsdr_set_center_freq(dev, configuration.frequency) != 0)
+        if (rtlsdr_set_center_freq(dev, configuration.rtl_sdr.frequency) != 0)
         {
             std::cerr << "Failed to set center frequency." << std::endl;
             return false;
         }
 
-        if (configuration.gain >= 0)
+        if (configuration.rtl_sdr.gain >= 0)
         {
             if (rtlsdr_set_tuner_gain_mode(dev, 1) != 0 ||
-                rtlsdr_set_tuner_gain(dev, configuration.gain) != 0)
+                rtlsdr_set_tuner_gain(dev, configuration.rtl_sdr.gain) != 0)
             {
                 std::cerr << "Failed to set manual gain." << std::endl;
                 return false;
@@ -103,8 +103,8 @@ private:
             static_cast<RTLSDR*>(ctx)->_callback(buf, len, ctx);
         },
         this,
-        configuration.buffer_num,
-        configuration.buffer_size * 2);
+        configuration.rtl_sdr.buffer_num,
+        configuration.rtl_sdr.buffer_size * 2);
     }
 
     void _callback(uint8_t *buf, uint32_t len, void *ctx)

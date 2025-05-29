@@ -6,11 +6,11 @@
 void Application::init()
 {
     rtl_sdr.set_callback([this](uint8_t *buf, uint32_t len) {
-        const uint64_t time_diff = 1000000 / 2 * len / configuration.sample_rate;
+        const uint64_t time_diff = 1000000 / 2 * len / configuration.rtl_sdr.sample_rate;
 
-        if (len/2 != configuration.buffer_size)
+        if (len/2 != configuration.rtl_sdr.buffer_size)
         {
-            std::cerr << "Buffer size mismatch: expected " << configuration.buffer_size << ", got " << len/2 << std::endl;
+            std::cerr << "Buffer size mismatch: expected " << configuration.rtl_sdr.buffer_size << ", got " << len/2 << std::endl;
             return;
         }
         
@@ -33,11 +33,19 @@ void Application::init()
     });
 
     rtl_sdr.init();
+
+    detect_harmonics.set_frequencies(
+        configuration.synchronization.base_frequency,
+        configuration.rtl_sdr.frequency,
+        configuration.rtl_sdr.sample_rate
+    );
 }
 
 void Application::run()
 {
     rtl_sdr.run();
+
+    bool last_state = false;
 
     while (true)
     {
@@ -56,25 +64,13 @@ void Application::run()
         if (data.buffer == nullptr)
             continue;
 
-        detect_wave.process(data.buffer.get());
+        float sync_probability = detect_harmonics.process(data.buffer.get());
 
-        fft.process(data.buffer.get());
-        auto results = fft.get_result();
-
-        std::ofstream out;
-        out.open("fft.csv", std::ios::out | std::ios::trunc);
-
-
-        out << "freq,abs1,abs2,arg1,arg2" << std::endl;
-        for (size_t i = 0; i < configuration.buffer_size; ++i)
+        bool current_state = hysteresis.process(sync_probability);
+        if (current_state != last_state)
         {
-            goertzel_filter.set_frequency(results.frequency[i]);
-            goertzel_filter.process(data.buffer.get());
-            auto res = goertzel_filter.get_result();
-            out << results.frequency[i] << "," << std::abs(results.value[i]) << "," << std::abs(res) << "," << std::arg(results.value[i]) << "," << std::arg(res) << std::endl;
+            std::cout << last_state << " => " << current_state << std::endl;
+            last_state = current_state;
         }
-
-
-        return;
     }
 }

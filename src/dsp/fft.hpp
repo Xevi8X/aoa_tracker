@@ -8,6 +8,7 @@
 
 struct Spectrum
 {
+    size_t N;
     const float* frequency;
     const std::complex<float>* value;
 };
@@ -15,7 +16,7 @@ struct Spectrum
 class FFT
 {
 public:
-    FFT(float sample_rate, size_t buffer_size)
+    FFT(uint32_t sample_rate, size_t buffer_size)
         : sample_rate(sample_rate), N(buffer_size)
     {
         if ((N == 0) || (N & (N - 1)) != 0)
@@ -25,7 +26,7 @@ public:
         shifted_buffer = std::make_unique<std::complex<float>[]>(N);
 
         for (size_t i = 0; i < N; ++i)
-            freq_axis[i] = (static_cast<int>(i) - static_cast<int>(N / 2)) * sample_rate / N;
+            freq_axis[i] = (static_cast<int>(i) - static_cast<int>(N / 2)) * static_cast<float>(sample_rate) / N;
     }
 
     void process(const std::complex<float>* input)
@@ -40,13 +41,14 @@ public:
     Spectrum get_result() const
     {
         return {
+            .N = N,
             .frequency = freq_axis.get(),
             .value = shifted_buffer.get()
         };
     }
 
 private:
-    float sample_rate;
+    uint32_t sample_rate;
     size_t N;
 
     std::unique_ptr<float[]> freq_axis;

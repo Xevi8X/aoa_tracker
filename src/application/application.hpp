@@ -3,8 +3,10 @@
 #include <mutex>
 #include <queue>
 
+#include "detect_haramonics/detect_harmonics.hpp"
 #include "dsp/fft.hpp"
 #include "dsp/goertzel.hpp"
+#include "dsp/hysteresis.hpp"
 #include "rtl_sdr/rtl_sdr.hpp"
 #include "utils/config.hpp"
 #include "utils/iq_data.hpp"
@@ -29,6 +31,12 @@ private:
         std::queue<IQData> buffer;
     } input;
 
-    GoertzelFilter goertzel_filter{configuration.sample_rate, configuration.buffer_size};
-    FFT fft{configuration.sample_rate, configuration.buffer_size};
+    GoertzelFilter goertzel_filter{configuration.rtl_sdr.sample_rate, configuration.rtl_sdr.buffer_size};
+    FFT fft{configuration.rtl_sdr.sample_rate, configuration.rtl_sdr.buffer_size};
+
+    DetectHarmonicsTriangular detect_harmonics{configuration.rtl_sdr.sample_rate,
+                                               configuration.rtl_sdr.buffer_size,
+                                               configuration.synchronization.magnitude_reference};
+    Hysteresis hysteresis{configuration.synchronization.threshold_rising,
+                          configuration.synchronization.threshold_falling};
 };
