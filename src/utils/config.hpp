@@ -20,5 +20,7 @@ struct Configuration
         float magnitude_reference = 3.0f;
         float threshold_rising = 0.8f;
         float threshold_falling = 0.2f;
+        float deadzone = 0.1f;
+        uint16_t tuning_loops = 10;
     } synchronization;
 };

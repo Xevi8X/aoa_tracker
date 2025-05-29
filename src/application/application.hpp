@@ -33,10 +33,4 @@ private:
 
     GoertzelFilter goertzel_filter{configuration.rtl_sdr.sample_rate, configuration.rtl_sdr.buffer_size};
     FFT fft{configuration.rtl_sdr.sample_rate, configuration.rtl_sdr.buffer_size};
-
-    DetectHarmonicsTriangular detect_harmonics{configuration.rtl_sdr.sample_rate,
-                                               configuration.rtl_sdr.buffer_size,
-                                               configuration.synchronization.magnitude_reference};
-    Hysteresis hysteresis{configuration.synchronization.threshold_rising,
-                          configuration.synchronization.threshold_falling};
 };

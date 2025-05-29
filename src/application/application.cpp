@@ -33,12 +33,6 @@ void Application::init()
     });
 
     rtl_sdr.init();
-
-    detect_harmonics.set_frequencies(
-        configuration.synchronization.base_frequency,
-        configuration.rtl_sdr.frequency,
-        configuration.rtl_sdr.sample_rate
-    );
 }
 
 void Application::run()
@@ -62,15 +56,8 @@ void Application::run()
         }
 
         if (data.buffer == nullptr)
-            continue;
-
-        float sync_probability = detect_harmonics.process(data.buffer.get());
-
-        bool current_state = hysteresis.process(sync_probability);
-        if (current_state != last_state)
         {
-            std::cout << last_state << " => " << current_state << std::endl;
-            last_state = current_state;
+            continue;
         }
     }
 }

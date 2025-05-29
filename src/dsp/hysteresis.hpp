@@ -1,5 +1,13 @@
 #pragma once
 
+enum class HysteresisState
+{
+    LOW,
+    RISING,
+    HIGH,
+    FALLING
+};
+
 class Hysteresis
 {
 public:
@@ -8,13 +16,14 @@ public:
     {
     }
 
-    bool process(float value)
+    HysteresisState process(float value)
     {
         if (state)
         {
             if (value < threshold_falling)
             {
                 state = false;
+                return HysteresisState::FALLING;
             }
         }
         else
@@ -22,9 +31,10 @@ public:
             if (value > threshold_rising)
             {
                 state = true;
+                return HysteresisState::RISING;
             }
         }
-        return state;
+        return state ? HysteresisState::HIGH : HysteresisState::LOW;
     }
 
 private:
