@@ -17,7 +17,7 @@ struct Configuration
     struct
     {
         uint32_t base_frequency = 500000;
-        float magnitude_reference = 3.0f;
+        float magnitude_reference = 4.0f;
         float threshold_rising = 0.8f;
         float threshold_falling = 0.2f;
         float deadzone = 0.1f;

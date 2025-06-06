@@ -95,6 +95,8 @@ private:
             return -1;
         }
 
+        std::cout << "First sync signal" << std::endl;
+
         sync_time = time;
         state = State::TUNING;
         tuning.count = 0U;
@@ -109,11 +111,13 @@ private:
 
         if (sync_signal_state == HysteresisState::FALLING)
         {
+            std::cout << "Falling: " << from_sync << " us." << std::endl;
             tuning.total_window_size += from_sync;
         }
 
         if (sync_signal_state == HysteresisState::RISING)
         {
+            std::cout << "Rising: " << from_sync << " us." << std::endl;
             sync_time = time;
             tuning.count++;
             tuning.total_cycle_time += from_sync;

@@ -60,16 +60,15 @@ protected:
         {
             return 1.0f;
         }
-        float magnitude_sum = 0.0f;
+        
+        float result = 1.0f;
 
         for (size_t i = 0; i < magnitudes.size(); ++i) {
-            float signal_magnitude = std::abs(H[i]);
-            magnitude_sum += signal_magnitude / magnitudes[i];
+            float signal_magnitude = std::abs(H[i]) / magnitudes[i];
+            result *= (signal_magnitude > magnitude_reference ? 1.0f : signal_magnitude / magnitude_reference);
         }
 
-        const float magnitude_avg = magnitude_sum / magnitudes.size();
-        // std::cout << "Magnitude average: " << magnitude_avg << std::endl;
-        return magnitude_avg > magnitude_reference ? 1.0f : magnitude_avg / magnitude_reference;
+        return result;
     }
 };
 

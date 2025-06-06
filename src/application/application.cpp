@@ -59,5 +59,7 @@ void Application::run()
         {
             continue;
         }
+
+        channel_determiner.determine(data);
     }
 }
